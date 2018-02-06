@@ -1,0 +1,5 @@
+*.bin
+*.fig
+*.jpg
+debug
+forward\binDatas
