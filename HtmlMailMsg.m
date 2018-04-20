@@ -6,10 +6,20 @@ else
     MailMsg = {};
     MailMsg{1} = makeheadhtml;
     MailMsg{end+1} = '<body>';
-    MailMsg{end+1} = ['<h1>', '您的程序已运行结束!', '</h1>'];
+    MailMsg{end+1} = '<h1> 您的程序已运行结束! </h1>';
+    
     MailMsg{end+1} = '<div style="background-color: #FFE4B0">';
-    MailMsg{end+1} = '<h3>推荐在您的m文件最前添加如下代码以便分析运行性能：</h3><p> profile on;</p>';
+    MailMsg{end+1} = '<h3>推荐在您的m文件最前添加如下代码以便分析运行性能：</h3>';
+    MailMsg{end+1} = '<p> profile on;</p>';
+    MailMsg{end+1} = '<p> %用于探测程序运行时间</p>';
     MailMsg{end+1} = '</div>';
+    
+    MailMsg{end+1} = '<div style="background-color: #FFE4B0">';
+    MailMsg{end+1} = '<h3>或添加如下代码以便分析运行性能：</h3>';
+    MailMsg{end+1} = '<p> profile on -memory;</p>';
+    MailMsg{end+1} = '<p> %用于探测程序运行时间及内存占用情况</p>';
+    MailMsg{end+1} = '</div>';
+    
     MsgBody = strcat('<p>',addTxtMsg,'</p>');
     MailMsg{end+1} = [MsgBody{:}];
     MailMsg{end+1} = '</body>';

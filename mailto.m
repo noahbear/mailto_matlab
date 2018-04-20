@@ -1,19 +1,23 @@
-%% 本程序用于运行程序结束后发送邮件提示，并将MATLAB所有figure保存为.png图片附件一并发送至指定邮箱！
-%                 Author: 840529151@qq.com   https://www.noahbear.top
+function mailto(varargin)
+%% 本程序用于运行程序结束后发送邮件提示
+% 本程序用于运行程序结束后发送邮件提示
+% 并将MATLAB所有figure保存为.png图片附件一并发送至指定邮箱！
+%                 Author: noahbear@sina.com   https://www.noahbear.top
 %     _______________________________________________________________
 %    使用方法：（将以下代码添加至您的脚本最后）
-%     emailto = 'xxxx@xxx.xx'; %您的邮箱
-%     mailto;
+%     mailto('xxxx@xxx.xx');
 %     _______________________________________________________________
-%    若希望统计程序运行时间，请在您的程序最前添加代码：
+%    若希望统计程序运行性能，请在您的程序最前添加代码：
 %     profile on;
 %     _______________________________________________________________
-%    【可选】若希望保存工作空间，并发送.mat格式邮件附件请在mailto;前添加加：
-%           mailto_saveVar = {'workspace'};  %保存整个工作空间
-%           mailto_saveVar = {'a','b','c'};  %保存变量 a, b, c
+%    【可选】若希望保存工作空间，并发送.mat格式邮件附件请使用参数：
+%           mailto('saveVar', 'workspace');     %保存整个工作空间
+%           mailto('saveVar', 'a,b,c');         %保存变量 a, b, c
 %    【可选】其他可选参数：
-%           mailto_subject = '发自你的MATLAB'; %设定邮件主题
-%           mailto_delTempFiles = 'Y';            %是否删除临时文件（如png图、mat文件）【Y/N】
+%           mailto('subject', '发自你的MATLAB'); %设定邮件主题
+%           mailto('delTempFiles', 'N');        %是否删除临时文件（如png图、mat文件）【Y/N】
+%     ------------------------------使用范例-------------------------
+%     mailto('noahbear@sina.com','subject','测试程序','saveVar','workspace');
 %
 
 mailto_profStatus = profile('status');
@@ -25,21 +29,8 @@ else
     mailto_profStatus = 1;
 end
 %% 默认设置
-if(~exist('emailto','var'))
-    emailto = '840529151@qq.com';           %默认联系人邮箱
-    fprintf(strcat('\n邮件将发送至:',emailto,'\n若希望修改邮箱，请在您的程序中加入代码：\n emailto = ''您的邮箱''; \n'));
-end
-if(~exist('mailto_subject','var'))
-    mailto_subject = '发自你的MATLAB';      %默认邮件主题
-end
-if(~exist('mailto_saveVar','var'))
-    mailto_saveVar = {};                    %默认不保存工作空间
-end
-if(~exist('mailto_saveVar','var'))
-    mailto_delTempFiles ='Y';               %删除临时文件
-end
+[emailto,mailto_subject,mailto_content,mailto_saveVar,mailto_delTempFiles] = sortInputs(varargin{:});
 %% ----------------------------------------------%
-mailto_content = {};
 mailto_timestamp = datetime;
 mailto_timestamp.Format = 'uuuuMMddHHmmss';
 mailto_demoTimestamp = char(mailto_timestamp);
@@ -86,17 +77,59 @@ catch Ecept_error
 end
 mailto_content = HtmlMailMsg(mailto_profStatus,mailto_content);
 %SendToServer(mailto_demoTimestamp,mailto_content,mailto_attachment)
+fprintf(['\n邮件将发送至:',emailto,'\n']);
 Sendmail( emailto , mailto_subject , mailto_content , mailto_attachment );
 
 fprintf('\n---------------------------------\n已成功发送邮件！\n');
-clear emailto_content emailto_subject mailto_timestamp mailto_i mailto_attachment mailto_attachmentdir mailto_content
-clear mailto_cur_mfile mailto_cur_mfile_path_index mailto_h_fig_len mailto_saveVarStr mailto_saveVar mailto_subject mailto_h_fig_save_name
-clear mailto_h_fig mailto_host mailto_mail mailto_port mailto_props mailto_psswd mailto_s_msg mailto_profStatus ans
 if(~exist('mailto_delTempFiles','var'))
     mailto_delTempFiles ='Y';
 end
 if sum(mailto_delTempFiles == 'Y'| mailto_delTempFiles == 'y')
     rmdir(strcat(mailto_cur_mfile_path,mailto_demoTimestamp),'s');
 end
-clear mailto_cur_mfile_path mailto_demoTimestamp mailto_delTempFiles
+
+function [emailto,mailto_subject,mailto_content,mailto_saveVar,mailto_delTempFiles] = sortInputs(varargin)
+emailto = '840529151@qq.com';           %默认联系人邮箱
+mailto_subject = '发自你的MATLAB';      %默认邮件主题
+mailto_content = {};
+mailto_saveVar = {};                    %默认不保存工作空间
+mailto_delTempFiles ='Y';               %删除临时文件
+if nargin == 0
+    % 使用默认设置
+else
+    pat = '([A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+)?';
+    r = regexp(varargin{1},pat,'match');
+    if ~isempty(r)
+        emailto = r;
+    end
+    if nargin > 1
+       subject = labelVaule('subject',varargin{:});
+       if ~isempty(subject)
+           mailto_subject = subject;
+       end
+       content = labelVaule('content',varargin{:});
+       if ~isempty(content)
+           mailto_content = {content};
+       end
+       saveVar = labelVaule('saveVar',varargin{:});
+       if ~isempty(saveVar)
+           mailto_saveVar = strsplit(saveVar,',');
+       end
+       delTempFiles = labelVaule('delTempFiles',varargin{:});
+       if ~isempty(delTempFiles)
+           mailto_delTempFiles = delTempFiles;
+       end
+    end
+end
+
+function value = labelVaule(labelname,varargin)
+value = [];
+a = strcmpi(varargin,labelname);
+idx = find(a == 1);
+if ~isempty(idx) && idx<nargin
+    value = varargin{idx+1};
+end
+
+
+
 
