@@ -47,7 +47,7 @@ elseif ~isempty(saveVar)
         saveVarStr{end} = saveVarStr{end}(1:end-1);
         %saveVarStr = strcat(saveVar,'；  ');
         evalin('base',['save(strcat(''' , curMfilePath , ''',''' , demoTimestamp, ''',''\Var.mat''),',saveVarStr{:} ,')']);
-        save(strcat(curMfilePath,demoTimestamp,'\Var.mat'),saveVar{:});
+        %save(strcat(curMfilePath,demoTimestamp,'\Var.mat'),saveVar{:});
         
         content{end+1} = strcat('已保存变量：',saveVarStr{:});
     catch Ecept_error
@@ -93,7 +93,7 @@ if sum(delTempFiles == 'Y'| delTempFiles == 'y')
 end
 
 function [emailto,subject,content,saveVar,delTempFiles] = sortInputs(varargin)
-emailto = '840529151@qq.com';           %默认联系人邮箱
+emailto = 'noahbear@sina.com';           %默认联系人邮箱
 subject = '发自你的MATLAB';      %默认邮件主题
 content = {};
 saveVar = {};                    %默认不保存工作空间
