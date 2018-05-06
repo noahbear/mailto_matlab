@@ -20,80 +20,84 @@ function mailto(varargin)
 %     mailto('noahbear@sina.com','subject','测试程序','saveVar','workspace');
 %
 
-mailto_profStatus = profile('status');
-if strcmp(mailto_profStatus.ProfilerStatus,'off')
+profStatus = profile('status');
+if strcmp(profStatus.ProfilerStatus,'off')
     fprintf('若希望统计程序运行性能，请在您的程序最前添加代码：\n profile on;')
-    mailto_profStatus = 0;
+    profStatus = 0;
 else
     profile off;
-    mailto_profStatus = 1;
+    profStatus = 1;
 end
 %% 默认设置
-[emailto,mailto_subject,mailto_content,mailto_saveVar,mailto_delTempFiles] = sortInputs(varargin{:});
+[emailto,subject,content,saveVar,delTempFiles] = sortInputs(varargin{:});
 %% ----------------------------------------------%
-mailto_timestamp = datetime;
-mailto_timestamp.Format = 'uuuuMMddHHmmss';
-mailto_demoTimestamp = char(mailto_timestamp);
-mailto_cur_mfile = mfilename('fullpath');
-mailto_cur_mfile_path_index = strfind(mailto_cur_mfile,'\');
-mailto_cur_mfile_path = mailto_cur_mfile(1:mailto_cur_mfile_path_index(end));
-mkdir(mailto_cur_mfile_path,mailto_demoTimestamp);
-if strcmp(mailto_saveVar,'workspace')
-    save(strcat(mailto_cur_mfile_path,mailto_demoTimestamp,'\BasicWorkspace.mat')); %保存工作空间
-    mailto_content{end+1} = '已保存整个工作空间变量。';
-elseif ~isempty(mailto_saveVar)
+timestamp = datetime;
+timestamp.Format = 'uuuuMMddHHmmss';
+demoTimestamp = char(timestamp);
+curMfile = mfilename('fullpath');
+curMfilePath_index = strfind(curMfile,'\');
+curMfilePath = curMfile(1:curMfilePath_index(end));
+mkdir(curMfilePath,demoTimestamp);
+if strcmp(saveVar,'workspace')
+    evalin('base',['save(strcat(''' , curMfilePath , ''',''' , demoTimestamp, ''',''\BasicWorkspace.mat''))']); %保存工作空间
+    content{end+1} = '已保存整个工作空间变量。';
+elseif ~isempty(saveVar)
     try
-        save(strcat(mailto_cur_mfile_path,mailto_demoTimestamp,'\Var.mat'),mailto_saveVar{:});
-        mailto_saveVarStr = strcat(mailto_saveVar,'；  ');
-        mailto_content{end+1} = strcat('已保存变量：',mailto_saveVarStr{:});
+        saveVarStr = strcat('''',saveVar,''',');
+        saveVarStr{end} = saveVarStr{end}(1:end-1);
+        %saveVarStr = strcat(saveVar,'；  ');
+        evalin('base',['save(strcat(''' , curMfilePath , ''',''' , demoTimestamp, ''',''\Var.mat''),',saveVarStr{:} ,')']);
+        save(strcat(curMfilePath,demoTimestamp,'\Var.mat'),saveVar{:});
+        
+        content{end+1} = strcat('已保存变量：',saveVarStr{:});
     catch Ecept_error
-        mailto_content{end+1} = strcat('工作空间保存发生异常:\n identifier：',Ecept_error.identifier,'\n message：',Ecept_error.message);
+        content{end+1} = strcat('工作空间保存发生异常:\n identifier：',Ecept_error.identifier,'\n message：',Ecept_error.message);
         fprintf('\n\n');
         fprintf(strcat('工作空间保存发生异常:\n identifier：',Ecept_error.identifier,'\n message：',Ecept_error.message));
         fprintf('请检查您输入的变量名是否正确，并使用正确的语句');
         help mailto;
-        mailto_delTempFiles = 'n';%不删除临时文件
+        delTempFiles = 'n';%不删除临时文件
     end
 end
 try
-    mailto_h_fig = findall(0,'type','figure');
-    mailto_h_fig_len = length(mailto_h_fig);
-    mailto_content{end+1} = strcat('共检测到',num2str(mailto_h_fig_len),'张figure图。');
-    for mailto_i = 1:mailto_h_fig_len
-        if isempty(mailto_h_fig(mailto_i).Number)
-            mailto_h_fig_save_name = mailto_h_fig(mailto_i).Name;
+    Hfig = findall(0,'type','figure');
+    HfigLen = length(Hfig);
+    content{end+1} = strcat('共检测到',num2str(HfigLen),'张figure图。');
+    for i = 1:HfigLen
+        if isempty(Hfig(i).Number)
+            h_fig_save_name = Hfig(i).Name;
         else
-            mailto_h_fig_save_name = num2str(mailto_h_fig(mailto_i).Number);
+            h_fig_save_name = num2str(Hfig(i).Number);
         end
-        saveas(mailto_h_fig(mailto_i),strcat(mailto_cur_mfile_path,mailto_demoTimestamp,'/',mailto_h_fig_save_name,'.png'));
+        saveas(Hfig(i),strcat(curMfilePath,demoTimestamp,'/',h_fig_save_name,'.png'));
     end
-    mailto_attachmentdir = dir(fullfile(mailto_cur_mfile_path,mailto_demoTimestamp));
-    mailto_attachmentdir = mailto_attachmentdir(3:end); %去除.及..目录
-    mailto_attachment = strcat({mailto_attachmentdir.folder},'\',{mailto_attachmentdir.name});
+    attachmentdir = dir(fullfile(curMfilePath,demoTimestamp));
+    attachmentdir = attachmentdir(3:end); %去除.及..目录
+    attachment = strcat({attachmentdir.folder},'\',{attachmentdir.name});
 catch Ecept_error
-    mailto_content{end+1} = strcat('图片保存发生异常：  identifier：',Ecept_error.identifier,'   message：',Ecept_error.message);
-    mailto_attachment = {};
-    mailto_delTempFiles = 'n';
+    content{end+1} = strcat('图片保存发生异常：  identifier：',Ecept_error.identifier,'   message：',Ecept_error.message);
+    attachment = {};
+    delTempFiles = 'n';
 end
-mailto_content = HtmlMailMsg(mailto_profStatus,mailto_content);
-%SendToServer(mailto_demoTimestamp,mailto_content,mailto_attachment)
+content = HtmlMailMsg(profStatus,content);
+%SendToServer(demoTimestamp,content,attachment)
 fprintf(['\n邮件将发送至:',emailto,'\n']);
-Sendmail( emailto , mailto_subject , mailto_content , mailto_attachment );
+Sendmail( emailto , subject , content , attachment );
 
 fprintf('\n---------------------------------\n已成功发送邮件！\n');
-if(~exist('mailto_delTempFiles','var'))
-    mailto_delTempFiles ='Y';
+if(~exist('delTempFiles','var'))
+    delTempFiles ='Y';
 end
-if sum(mailto_delTempFiles == 'Y'| mailto_delTempFiles == 'y')
-    rmdir(strcat(mailto_cur_mfile_path,mailto_demoTimestamp),'s');
+if sum(delTempFiles == 'Y'| delTempFiles == 'y')
+    rmdir(strcat(curMfilePath,demoTimestamp),'s');
 end
 
-function [emailto,mailto_subject,mailto_content,mailto_saveVar,mailto_delTempFiles] = sortInputs(varargin)
+function [emailto,subject,content,saveVar,delTempFiles] = sortInputs(varargin)
 emailto = '840529151@qq.com';           %默认联系人邮箱
-mailto_subject = '发自你的MATLAB';      %默认邮件主题
-mailto_content = {};
-mailto_saveVar = {};                    %默认不保存工作空间
-mailto_delTempFiles ='Y';               %删除临时文件
+subject = '发自你的MATLAB';      %默认邮件主题
+content = {};
+saveVar = {};                    %默认不保存工作空间
+delTempFiles ='Y';               %删除临时文件
 if nargin == 0
     % 使用默认设置
 else
@@ -103,21 +107,21 @@ else
         emailto = r;
     end
     if nargin > 1
-       subject = labelVaule('subject',varargin{:});
-       if ~isempty(subject)
-           mailto_subject = subject;
+       subj = labelVaule('subject',varargin{:});
+       if ~isempty(subj)
+           subject = subj;
        end
        content = labelVaule('content',varargin{:});
        if ~isempty(content)
-           mailto_content = {content};
+           content = {content};
        end
        saveVar = labelVaule('saveVar',varargin{:});
        if ~isempty(saveVar)
-           mailto_saveVar = strsplit(saveVar,',');
+           saveVar = strsplit(saveVar,',');
        end
-       delTempFiles = labelVaule('delTempFiles',varargin{:});
-       if ~isempty(delTempFiles)
-           mailto_delTempFiles = delTempFiles;
+       delTempFile = labelVaule('delTempFiles',varargin{:});
+       if ~isempty(delTempFile)
+           delTempFiles = delTempFile;
        end
     end
 end
