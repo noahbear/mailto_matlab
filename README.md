@@ -1,20 +1,39 @@
 %% mailto
-% ±¾³ÌÐòÓÃÓÚÔËÐÐ³ÌÐò½áÊøºó·¢ËÍÓÊ¼þÌáÊ¾
-% ²¢½«MATLABËùÓÐfigure±£´æÎª.pngÍ¼Æ¬¸½¼þÒ»²¢·¢ËÍÖÁÖ¸¶¨ÓÊÏä£¡
+
+% æœ¬ç¨‹åºç”¨äºŽè¿è¡Œç¨‹åºç»“æŸåŽå‘é€é‚®ä»¶æç¤º
+
+% å¹¶å°†MATLABæ‰€æœ‰figureä¿å­˜ä¸º.pngå›¾ç‰‡é™„ä»¶ä¸€å¹¶å‘é€è‡³æŒ‡å®šé‚®ç®±ï¼
+
 %                 Author: noahbear@sina.com   https://www.noahbear.top
+
 %     _______________________________________________________________
-%    Ê¹ÓÃ·½·¨£º£¨½«ÒÔÏÂ´úÂëÌí¼ÓÖÁÄúµÄ½Å±¾×îºó£©
+
+%    ä½¿ç”¨æ–¹æ³•ï¼šï¼ˆå°†ä»¥ä¸‹ä»£ç æ·»åŠ è‡³æ‚¨çš„è„šæœ¬æœ€åŽï¼‰
+
 %     mailto('xxxx@xxx.xx');
+
 %     _______________________________________________________________
-%    ÈôÏ£ÍûÍ³¼Æ³ÌÐòÔËÐÐÐÔÄÜ£¬ÇëÔÚÄúµÄ³ÌÐò×îÇ°Ìí¼Ó´úÂë£º
+
+%    è‹¥å¸Œæœ›ç»Ÿè®¡ç¨‹åºè¿è¡Œæ€§èƒ½ï¼Œè¯·åœ¨æ‚¨çš„ç¨‹åºæœ€å‰æ·»åŠ ä»£ç ï¼š
+
 %     profile on;
+
 %     _______________________________________________________________
-%    ¡¾¿ÉÑ¡¡¿ÈôÏ£Íû±£´æ¹¤×÷¿Õ¼ä£¬²¢·¢ËÍ.mat¸ñÊ½ÓÊ¼þ¸½¼þÇëÊ¹ÓÃ²ÎÊý£º
-%           mailto('saveVar', 'workspace');     %±£´æÕû¸ö¹¤×÷¿Õ¼ä
-%           mailto('saveVar', 'a,b,c');         %±£´æ±äÁ¿ a, b, c
-%    ¡¾¿ÉÑ¡¡¿ÆäËû¿ÉÑ¡²ÎÊý£º
-%           mailto('subject', '·¢×ÔÄãµÄMATLAB'); %Éè¶¨ÓÊ¼þÖ÷Ìâ
-%           mailto('delTempFiles', 'N');        %ÊÇ·ñÉ¾³ýÁÙÊ±ÎÄ¼þ£¨ÈçpngÍ¼¡¢matÎÄ¼þ£©¡¾Y/N¡¿
-%     ------------------------------Ê¹ÓÃ·¶Àý-------------------------
-%     mailto('noahbear@sina.com','subject','²âÊÔ³ÌÐò','saveVar','workspace');
+
+%    ã€å¯é€‰ã€‘è‹¥å¸Œæœ›ä¿å­˜å·¥ä½œç©ºé—´ï¼Œå¹¶å‘é€.matæ ¼å¼é‚®ä»¶é™„ä»¶è¯·ä½¿ç”¨å‚æ•°ï¼š
+
+%           mailto('saveVar', 'workspace');     %ä¿å­˜æ•´ä¸ªå·¥ä½œç©ºé—´
+
+%           mailto('saveVar', 'a,b,c');         %ä¿å­˜å˜é‡ a, b, c
+
+%    ã€å¯é€‰ã€‘å…¶ä»–å¯é€‰å‚æ•°ï¼š
+
+%           mailto('subject', 'å‘è‡ªä½ çš„MATLAB'); %è®¾å®šé‚®ä»¶ä¸»é¢˜
+
+%           mailto('delTempFiles', 'N');        %æ˜¯å¦åˆ é™¤ä¸´æ—¶æ–‡ä»¶ï¼ˆå¦‚pngå›¾ã€matæ–‡ä»¶ï¼‰ã€Y/Nã€‘
+
+%     ------------------------------ä½¿ç”¨èŒƒä¾‹-------------------------
+
+%     mailto('noahbear@sina.com','subject','æµ‹è¯•ç¨‹åº','saveVar','workspace');
+
 %
